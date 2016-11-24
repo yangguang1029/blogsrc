@@ -1,7 +1,7 @@
 ---
 title: googleClosureCompiler使用
 date: 2016-08-15 20:47:56
-tags:
+tags: google-closure-compiler
 ---
 官方文档[在此](https://developers.google.com/closure/compiler/)
 

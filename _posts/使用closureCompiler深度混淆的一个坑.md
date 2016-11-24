@@ -1,7 +1,7 @@
 ---
 title: 使用closureCompiler深度混淆的一个坑
 date: 2016-08-15 20:25:30
-tags:
+tags: google-closure-compiler
 ---
 混淆命令为:
 

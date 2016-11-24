@@ -1,7 +1,7 @@
 ---
 title: js中的string和unicode
 date: 2016-08-15 20:37:25
-tags:
+tags: javaScript
 ---
 javaScript中的String是UTF-16字符集合，但是要注意，因为js中并没有一种类型叫“字符”，所以charAt() 方法返回的是一个字符串。而charCodeAt()方法，则返回的是0-65535之间的一个整数。fromCharCode()方法是把一个unicode编码转换成String对象，这里是例如
 

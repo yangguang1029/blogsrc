@@ -1,7 +1,7 @@
 ---
 title: tableview的一个优化方案
 date: 2016-08-15 20:03:29
-tags:
+tags: cocos
 ---
 ### 方案说明
 
