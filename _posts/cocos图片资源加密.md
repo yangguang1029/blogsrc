@@ -44,7 +44,8 @@ def encrypt(path):
 		newarr[3]= ENCRYPTBYTE
 		for byte in bytes:
 			newb = byte ^ ENCRYPTBYTE
-			newarr[index] = newb				index += 1
+			newarr[index] = newb
+			index += 1
 		wf.write(newarr)
 		wf.close()
 	rf.close()
