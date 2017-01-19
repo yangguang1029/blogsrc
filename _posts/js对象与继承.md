@@ -1,7 +1,7 @@
 ---
 title: js对象与继承(一)
 date: 2016-11-18 11:24:32
-tags: javaScript
+tags: javascript
 ---
 
 大家都知道在js中创建一个对象的一种很基本的方式

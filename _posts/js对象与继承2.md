@@ -1,7 +1,7 @@
 ---
 title: js对象与继承(二)
 date: 2016-11-18 16:33:43
-tags: javaScript
+tags: javascript
 ---
 
 ### 类继承与原型继承

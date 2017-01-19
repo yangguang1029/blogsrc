@@ -1,7 +1,7 @@
 ---
 title: javaScript中的无符号右移运算符
 date: 2016-08-15 20:57:49
-tags: javaScript
+tags: javascript
 ---
 今天刷leetcode上的题目[revert bits](https://leetcode.com/problems/reverse-bits/)的时候，用到了js里的位移操作，然后就出现了问题。题目里给出的数字是32位无符号整数，但是js里默认的整数是32位有符号整数，所以在执行
 
