@@ -101,5 +101,4 @@ reloadData()
 ```
 
 ### 其它
-像checkbox,ControlSlider等用的不多的，可以临时去查一下。这里贴一些实际写的代码
-
+像checkbox,ControlSlider等用的不多的，可以临时去查一下。
