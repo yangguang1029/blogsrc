@@ -8,7 +8,7 @@ tags: javascript
 
 js的原型链继承很简单，对一个object，如果去获取它本身不存在的属性或方法，则往它的\_\_proto\_\_上查找，因为\_\_proto\_\_本身也是一个object，所以如果没找到，则往\_\_proto\_\_的\_\_proto\_\_上查找，跟沿着一条链条走一样，直到找到返回，或者\_\_proto\_\_为null或undefined找到了尽头。
 
-原型链不可能无止尽的延伸，所以js中有一个默认的object，它的__proto__就是undefined，除非我们强制打断原型链，否则最终都会查找到这个object上，它是长这个样子的,可以看到它是没有__proto__属性的
+原型链不可能无止尽的延伸，所以js中有一个默认的object，它的\_\_proto\_\_就是undefined，除非我们强制打断原型链，否则最终都会查找到这个object上，它是长这个样子的,可以看到它是没有\_\_proto\_\_属性的
 
 ![image](js-object/42F976BA-0D05-4C76-ABBD-BA28C1627E46.png)
 
@@ -16,7 +16,7 @@ js的原型链继承很简单，对一个object，如果去获取它本身不存
 
 ### \_\_proto\_\_来源
 
-如果我们没对object的__proto__赋值，则它的__proto__来源于使用Object.create方法调用时传给他的参数，虽然构造一个object有好几种写法，例如
+如果我们没对object的\_\_proto\_\_赋值，则它的\_\_proto\_\_来源于使用Object.create方法调用时传给他的参数，虽然构造一个object有好几种写法，例如
 
 ```
 var a = {}
@@ -31,7 +31,7 @@ var c = Object.create(proto)
 
 ![img](js-object/08078187-DE71-479F-93B2-5E40B8C12934.png)
 
-可以看到，function默认的prototype有一个属性constructor指向函数自己，它的__proto__就是我们前面提到的原型链尽头的那个object（真该给他取个什么名字才好），当然我们可以给function指定一个prototype，而不使用它默认的，那就是我们在js中实现继承的办法。
+可以看到，function默认的prototype有一个属性constructor指向函数自己，它的\_\_proto\_\_就是我们前面提到的原型链尽头的那个object（真该给他取个什么名字才好），当然我们可以给function指定一个prototype，而不使用它默认的，那就是我们在js中实现继承的办法。
 
 这里顺便牵扯到一个问题，我们都知道object的constructor属性指向它的构造函数，所以在设定prototype时，必须再将prototype.constructor指向构造函数
 
@@ -42,4 +42,9 @@ f.prototype = {"1":1}
 var t = new f();
 ```
 如果没有注释掉的那句，则t.constructor就不是f，而是变成了function Object(){[native code]}了
+
+### 缩短原型链
+如果原型链过长，可能会带来性能问题。所以需要注意的是尽量不要去扩展内置类型的原型。直接获取属性和for in函数都会查询原型链，如果想避免查询原型链，可以使用hasOwnProperty方法来判断
+
+使用var a = Object.create(null) 代替 var a = {}的区别，前者明确将\_\_proto\_\_设置为null，查找属性时就不会再往原型链上查找了，后者\_\_proto\_\_其实是Object.prototype
 

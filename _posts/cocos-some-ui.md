@@ -9,6 +9,7 @@ tags: cocos
 - jsbinding代码位于 bindings/auto/jsb\_cocos2dx\_ui\_auto.cpp内
 - c++代码位于cocos2d-x/cocos/ui/UIScale9Sprite.cpp内
 - scale9的实现原理是将纹理根据设定的区域，生成9个sprite，然后batch渲染
+- 它可以跟sprite一样通过setSpriteFrame来切换纹理，但切换之后需要重新执行setPreferredSize。否则显示不正确
 
 用的比较多的接口有:
 

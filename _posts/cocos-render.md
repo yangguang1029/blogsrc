@@ -20,4 +20,30 @@ void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t paren
 
 draw函数为虚函数，且Node内的实现为空，具体实现在各个子类中，它的作用就是生成RenderCommand
 
-Render的一些细节
+### RenderCommand
+RenderCommand有以下类型
+
+```
+enum class Type
+    {
+        /** Reserved type.*/
+        UNKNOWN_COMMAND,
+        /** Quad command, used for draw quad.*/
+        QUAD_COMMAND,
+        /**Custom command, used for calling callback for rendering.*/
+        CUSTOM_COMMAND,
+        /**Batch command, used for draw batches in texture atlas.*/
+        BATCH_COMMAND,
+        /**Group command, which can group command in a tree hierarchy.*/
+        GROUP_COMMAND,
+        /**Mesh command, used to draw 3D meshes.*/
+        MESH_COMMAND,
+        /**Primitive command, used to draw primitives such as lines, points and triangles.*/
+        PRIMITIVE_COMMAND,
+        /**Triangles command, used to draw triangles.*/
+        TRIANGLES_COMMAND
+    };
+```
+在CCRender.cpp的processRenderCommand函数里，有各个类型command的具体处理。例如 CUSTOM\_COMMAND就是执行设定的回调函数
+
+通过这里可以了解cocos2dx-3.x的autoBatch机制，Sprite使用的是TrianglesCommand，在处理时，会先统一放在队列里，在遍历队列时，比较每个Command的materialID,如果相同则统一处理。决定materialID的有glProgram， \_textureID，\_blendType。此外不同globalZorder的精灵因为不在一批处理，所以不会自动autoBatch，不同父节点，不同localZOrder则不会影响，会自动autoBatch

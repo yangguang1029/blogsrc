@@ -60,3 +60,6 @@ svn merge http://xxxx/a.json -r 1063:1064
 svn merge ../config/ -r 1063:1064
 ```
 如果不指定初始和结束版本号，则默认为仓库起始和当前（HEAD）
+
+
+最近刚刚发现一个问题，初始仓库trunk，使用svn cp生成release仓库，然后在trunk上增加一行代码，svn merge到release上去，在release上删除，然后svn merge到trunk上去。此时这行代码处不会提示有冲突，而是默认添加上了这行。我不太确定是否我的用法不对，所以暂时先记录下这个情况。在分支间来回merge时，要小心合并，尽量避免频繁merge吧，毕竟每次merge会有很多冲突
