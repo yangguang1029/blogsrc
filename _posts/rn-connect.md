@@ -51,7 +51,7 @@ redux里有不少概念，一时半会看不明白，这里讲下我理解的pro
 	}
 
 	testContainer.js:
-	
+	import { connect } from 'react-redux';
 	class testContainer extends Component{
 		render(){
 			return (<View>
@@ -99,3 +99,9 @@ mapDispatchToProps也可以是一个方法，它的第一个参数是store的dis
 可以看到如果用方法来实现，在change1里就可以做很灵活的操作了。同时Redux提供了一个很简便的接口bindActionCreators(Actions, dispatch)，使用它相当于使用Object实现，并且key和创建action的方法名一致。
 
 上面代码里用到的Actions，是创建action的接口
+
+除了上面提到的mapStateToProps和mapDispatchToProps外，connect方法后面还可以再带两个参数
+
+mergeprops
+
+options:
