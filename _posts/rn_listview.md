@@ -40,11 +40,22 @@ dataSource要拿来使用，除了实现必须的接口之外，还需要给它�
 它接受三个参数，并返回一个ListViewDataSource的实例对象。第一个参数dataBlob是传入的数据，它应该是一个Object，第二个参数是一个数组，它指定了一些key，也就是说dataBlob这个Object里，sectionIdentities里的keys对应的value才是需要显示的。rowIdentities则是一个二维数组，它指定了每节的数据中，哪些key对应的数据需要显示。前面我们说过，需要显示的数据是由getRowData和getSectionHeaderData来获取的，所以上面所说的是系统默认的实现，我们当然也可以自己去实现这两个接口，来自定义数据的获取行为。 以下是一段示例代码
 	
 	let data=[["1","2", "3"],["4","5", "6"],["7","8", "9"]];
-	const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2, sectionHeaderHasChanged: (s1, s2) => s1 !== s2});
+	const ds = new ListView.DataSource({
+		rowHasChanged: (r1, r2) => r1 !== r2, 
+		sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+	});
 	<ListView
     	dataSource={ds.cloneWithRowsAndSections(data, ["0", "2"], [[0,1], [1,2]])}
 	/>
-这段代码的行为是显示两个section，第一个section显示1和2，第二个section会显示8和9。这个例子里dataBlob是一个数组，它只是比较特殊的Object，key是0123...，如果是普通的key-value也是一样处理。
+这段代码的行为是显示两个section，第一个section显示1和2，第二个section会显示8和9。这个例子里dataBlob是一个数组，它只是比较特殊的Object，key是0123...，如果是普通的key-value也是一样处理。cloneWithRows同理但更为简单，它只有两个参数，第一个参数dataBlob是传入的数据，第二个参数是一个数组，指定需要显示的rowIdentities。
+
+对于这样一段代码
+
+	let data = ["111", "222", "333"]
+	<ListView
+    	dataSource={ds.cloneWithRowsAndSections(data)}
+	/>
+显示效果会是有三个section，每个section有3个row，这是由于系统默认的getRowData和getSectionHeaderData实现方式决定的，思考一下就能明白了。
 
 ### ListView
 
@@ -59,7 +70,9 @@ dataSource要拿来使用，除了实现必须的接口之外，还需要给它�
 
 - renderSectionHeader函数声明为(sectionData, sectionID) => renderable，如果listView有分节，则实现此函数来绘制每节的头部，返回null或者undefined则不会渲染。
 
-- initialListSize用来指定起始时渲染多少个单元行，如果不指定的话，系统默认是10个。但首次渲染的单元行数量不完全取决于此，还取决于一个属性值DEFAULT_SCROLL_RENDER_AHEAD = 1000，这代表整个listView最多渲染多少个逻辑像素高，首次渲染的单元行数量取这两者中较大的那个
+- initialListSize用来指定起始时渲染多少个单元行，如果不指定的话，系统默认是10个。但首次渲染的单元行数量不完全取决于此，还取决于一个属性值DEFAULT_SCROLL_RENDER_AHEAD = 1000，这代表整个listView最多渲染多少个逻辑像素高，首次渲染的单元行数量取这两者中较大的那个。这是用来做性能优化的，如果确实碰到性能瓶颈时，需要将源代码完全看明白才能着手，所以建议在没完全看明白源代码之前没必要去碰这些参数。
+
+- scrollRenderAheadDistance这是一个数字，前面说过了，它参与限制首次渲染的单元行数量，默认值为1000，我们写一个demo，设置数据量比较大，然后让这个值为不同的值，可以看到首次渲染的单元行数量会不一样
 
 - onEndReached在整个listView滚动到最底部时会被调用的回调
 
@@ -71,8 +84,6 @@ dataSource要拿来使用，除了实现必须的接口之外，还需要给它�
 
 - renderScrollComponent函数声明为(props) => renderable，用来渲染装listView内容的容器，默认实现是直接返回了一个ScrollView
 
-- scrollRenderAheadDistance这是一个数字，前面说过了，它参与限制首次渲染的单元行数量，默认值为1000，我们写一个demo，设置数据量比较大，然后让这个值为不同的值，可以看到首次渲染的单元行数量会不一样
-
 - onChangeVisibleRows函数声明为(visibleRows, changedRows) => void，它在当前正在显示哪些单元行发生变化时被调用，visibleRows是一个字典，形式为{ sectionID: { rowID: true }}，表示所有当前可见的单元行，changedRows也是一个字典，形式为{ sectionID: { rowID: true | false }}，表示visible发生了变化的单元行
 
 - removeClippedSubviews 这是一个bool值，默认是true，用来优化数据量很大时的显示性能
@@ -81,4 +92,6 @@ dataSource要拿来使用，除了实现必须的接口之外，还需要给它�
 
 - enableEmptySections,这是一个Bool值，用来指定当一个没有数据的节是否需要展示，例如dataSource数据为[[1,2],[],[3,4]]时，中间的那个节（包括sectionHead和rows）是否会展示，如果不指定的话这个值为undefined，就不会显示。
 
-以上就是listView的所有props了，也就是说明白了上面的内容，使用listView来完成功能肯定没问题了，但如果希望了解更多的细节，还是需要查看源代码，包括js端以及native端的源码。react-native的最新版本提供了flatList组件，它是listView的升级版，应该优先考虑使用flatList
+以上就是listView的所有props了，也就是说明白了上面的内容，使用listView来完成功能肯定没问题了，但如果希望了解更多的细节，还是需要查看源代码，包括js端以及native端的源码。react-native的最新版本提供了flatList组件，它是listView的升级版，应该优先考虑使用flatList。
+
+ps：当我们修改listView的数据源时，即使只是修改数组内的一项，也会导致整个listView都重新刷新，如果短时间内频繁更新数据源的话，可能导致性能瓶颈，应该优化为缓存数据后集中更新一次。
