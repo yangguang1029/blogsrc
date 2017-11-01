@@ -42,7 +42,7 @@ constructor显然适合做初始化，比如初始化state,成员变量，绑定
 另外需要注意，该回调被调用时，不一定props发生了变化，这里的没有发生变化有两种情形，一种是父控件没有改变子控件的props，例如父组件代码内调用setState刷新界面，此时子控件的componentWillReceiveProps也会被调用，但props没有发生变化。还有就是父控件传递过去的props是一个复杂数据类型，所以实际上是个引用，即使props发生了变化，this.props和nextProps也是相同的。
 
 ### shouldComponentUpdate(nextProps, nextState)
-通过这个回调函数返回true还是false来决定是否re-render。如果不重写的话会使用源代码的默认实现。默认实现可以参考[官方文档](https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/update/using_should_component_update.html)，从代码可以看出来，只要props和state有一个改变了，就会触发re-render。怎么样认为改变了怎么样认为是不变呢？ 从代码来看，首先是===强等判断，所以如果是同一个引用，那么不管内容怎么变，都认为是不变。例如
+通过这个回调函数返回true还是false来决定是否re-render。如果不重写的话会使用源代码的默认实现。默认实现可以参考源代码，它使用了fbjs/lib/shallowEqual.js内的shallowEqual方法来比较新旧props和state，只要props和state有一个改变了，就会触发re-render。 从shallowEqual代码看，首先是===强等判断，所以如果是同一个引用，那么不管内容怎么变，都认为是不变。例如
 
 	let old = this.state;
 	old.num=999;
@@ -61,10 +61,28 @@ constructor显然适合做初始化，比如初始化state,成员变量，绑定
 	this.setState({obj:old})
 这里虽然num变了，但并不会触发re-render。
 
-通过限制一些re-render的触发条件，可以起到优化性能的作用。
+以上是源代码中的默认实现，如果需要的话就重写通过限制一些re-render的触发条件，可以起到优化性能的作用。
 
 ### componentWillUpdate(nextProps, nextState)
 这个方法在每次re-render之前都会被调用，因为是在render之前，所以有点类似于componentWillMount，我们在这个回调里为下次render做好准备，通过this.props和this.state可以获取到当前的props和state，通过传进来的nextProps和nextState参数可以获得新的props和state。与componentWillMount不一样的是，在这里我们是可以操作UI的，但并不建议这么做，因为此时操作的是上次渲染的UI，它们有可能在下次render时就失效了。我们也不应该在这里调用setState，因为setState又会触发componentWillUpdate,这就造成了死循环，当然如果通过对nextProps或者nextState做判断是可以杜绝进入死循环的，但最好还是避免这样操作。
 
 ### componentDidUpdate(prevProps, prevState)
 正如前面说的componentWillUpdate对应componentWillMount，这里componentDidUpdate就对应着componentDidMount。它在render之后被调用，在这里就可以放心的获取和操作UI了。它的参数prevProps和prevState对应着componentWillUpdate里的this.props和this.state，而这个函数里的this.props和this.state就是当前的props和state，也就是componentWillUpdate里的nextProps和nextState。子节点的回调先于父节点被调用。在这里调用setState也需要非常小心，很可能会造成无限循环，如果确实需要的话，应该配合shouldComponentUpdate加以限制。如果我们需要对UI进行交互，比如获取某个UI的尺寸位置，这里是最合适的位置。
+
+## componentWillUnmount
+当一个component不再被渲染时会被调用。例如
+
+	constructor(props){
+		super(props);
+		this.state={bVisible:true};
+	}
+
+	render(){
+		return (<View>
+			{this.state.bVisible ? <MyComponent /> : null} 
+			<Button onPress={()=>{
+				this.setState({bVisible:false})
+			}}>
+		</View>)
+	}
+这个demo起始时MyComponent显示，点击按钮后不显示。不要误以为MyComponent只是被隐藏了，实际上它被销毁了，它所占用的内存都会被回收，此时它的componentWillUnmount会被调用。我们在componentWillMount或者componentDidMount里如果注册了一些监听，就需要在这里注销掉。与componentDidMount相反，父控件的componentWillUnmount会比子控件的先被调用。

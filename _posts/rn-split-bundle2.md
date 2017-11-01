@@ -62,3 +62,5 @@ bundle需要被拆分为RN源代码和业务代码。我们知道js代码的入�
 当我们需要加载business.bundle并进去RN界面时，我们使用一个普通的Activity，在它的onCreate函数里，构造一个ReactRootView,并设为contentView, 然后我们通过Application获取到host再获取到ReactInstanceManager，通过反射或者修改源代码，将manager绑定给这个ReactRootView，通过给它设置jsModuleName, 最后通过ReactInstanceManager获取CatalystInstance类，调用其loadScriptFromAssets或者loadScriptFromFile接口加载business.bundle即可。
 
 这种方案将原来一整个Bundle加载分成了两步，在加载business.bundle时能够减少内存使用，提高加载性能。
+
+我在github上放了一个[demo](https://github.com/yangguang1029/ReactNativeSplit.git)。做到让这个demo运行的程度并不意味着就万事大吉了，之后还要处理图片路径问题，sourcemap解析问题等，如果有碰到问题欢迎讨论交流。
