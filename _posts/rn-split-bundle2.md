@@ -63,4 +63,6 @@ bundle需要被拆分为RN源代码和业务代码。我们知道js代码的入�
 
 这种方案将原来一整个Bundle加载分成了两步，在加载business.bundle时能够减少内存使用，提高加载性能。
 
-我在github上放了一个[demo](https://github.com/yangguang1029/ReactNativeSplit.git)。做到让这个demo运行的程度并不意味着就万事大吉了，之后还要处理图片路径问题，sourcemap解析问题等，如果有碰到问题欢迎讨论交流。
+### 结束
+
+我在github上放了一个[demo](https://github.com/yangguang1029/ReactNativeSplit.git)。做到让这个demo运行的程度并不意味着就万事大吉了，多个bundle之间模块的冲突，全局变量和方法冲突，图片路径问题，sourcemap解析等还有很多需要处理的问题，我们解决了不少，且目前已经在线上使用了。欢迎讨论交流。
