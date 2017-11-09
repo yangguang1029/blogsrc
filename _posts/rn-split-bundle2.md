@@ -1,5 +1,8 @@
-# ReactNative拆分bundle方案
-
+---
+title: ReactNative拆分bundle方案
+date: 2017-11-03 20:15:36
+tags: ReactNative
+---
 ### 为什么要拆分bundle？
 
 我们知道RN项目中的js代码会被打成一整个bundle来加载执行，这个Bundle包含了我们自己写的业务代码和RN源代码。如果不进行拆分，我们再做热更新时，哪怕业务代码只更改了一行，也需要更新一整个bundle，其中RN源代码至少占用500k以上，如果使用了第三方库如redux等还会更多，这是很大的浪费。其次是可能一个项目中包含多个RN业务，这样加载它们各自的bundle都带有RN源代码以及第三方库，这就重复了。
@@ -25,7 +28,7 @@
 	__d(function(t,n,c,i){"use strict";function o(t,n,c,i,o){}c.exports=o},22);
 
 第三个部分是模块的调用，第二个部分是进行了模块的注册，如果想要代码执行，就必须调用模块，这是bundle内的最后两行
-	
+
 	;require(65);
 	;require(0);
 这个数字65根据不同的项目是不一样的。

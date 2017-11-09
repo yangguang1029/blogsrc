@@ -35,6 +35,8 @@ def main():
 
     copyDir()
 
+    shutil.copy(os.path.join(root, "jquery.qrcode.min.js"), publicPath)
+
     s1 = 'hexo d'
     print(s1)
     os.system(s1)
