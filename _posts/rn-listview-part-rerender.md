@@ -1,6 +1,6 @@
 ---
 title: ReactNative之ListView局部刷新
-date: 2017-11-15 19:18:36
+date: 2017-11-30 19:18:36
 tags: ReactNative
 ---
 
@@ -82,3 +82,5 @@ tags: ReactNative
 
 
 另外一个实现局部刷新的方案是将renderRow返回的Component进行封装，实现其shouldComponentUpdate接口。这个方法比较绕，所以最好还是使用ListView本身提供好的接口rowHasChanged。
+
+这个例子很简单，所以一眼就能看出来问题。但如果项目使用了redux，问题就很隐蔽了。使用redux时，数据数组存储在store里，dataSource在页面里才创建，当数据发生变化时，redux触发setState修改的就是数组，而不是dataSource，导致整个listView都刷新了。这个情况下要局部刷新，首先在store里储存dataSource，reducer内数据更新时也更新dataSource，其次需要rowHasChanged函数不能简单的使用row1!==row2，而是要比较实际内容，因为redux基于imutable原则，即使内容不变，row1和row2也不是同一个对象了。
