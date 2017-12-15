@@ -18,7 +18,7 @@ render函数返回true,false,null,undefined都是合法的jsx语法，但它们�
 ### componentWillMount
 当Component将要被加载时被调用，它在render之前被调用。在这个函数里执行setState的话，不会触发componentWillUpdate和render。因为render还没被调用，所以在这个函数里想通过ref获取子控件是不行的。componentWillMount为第一次render提供了准备数据的机会，我们可以放心的操作props和state。
 
-componentWillMount也适合用来注册事件监听，假如有的事件在渲染时触发，那么在render前就注册显然更合适。
+componentWillMount也适合用来注册事件监听，假如有的事件在渲染时触发，那么在render前就注册显然更合适。componentWillMount的父节点会早于子节点被调用。
 
 ### componentDidMount
 当component已经被加载后调用，它在render之后被调用。所以在这个函数里执行setState会触发componentWillUpdate和render。对于同级节点，先渲染的componentDidMount会先被调用，对于父子节点，子节点的componentDidMount会比父节点先调用。前面说到render不应该调用setState来触发re-render，而componentWillMount调用setState又不会触发re-render，显然componentDidMount则完全没问题了，比如我们有一个component的尺寸未知，取决于另一个component的已知尺寸，就可以在componentDidMount里获取数据，计算好后setState来重新render。

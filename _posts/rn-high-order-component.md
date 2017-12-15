@@ -36,6 +36,19 @@ tags: ReactNative
 	}
 这里需要注意一点的就是分清子类是否需要重写父类的方法，如果不重写，则会直接使用父类的实现，就像上面的componentWillMount函数。如果重写，判断是否需要使用super调用父类的实现，比如上面的componentDidMount函数。
 
+还有一种基于特定组件封装的办法，就是重写它的render方法，例如
+
+	import {cloneElement} from "react"
+	let originText = Text;
+	Text.prototype.render = function(...args){
+		let text = originText.apply(this, args);
+		return cloneElement(text, {style:[
+			text.props.style,
+			{color:"red"}	
+		]})
+	}
+然后再使用Text，就发现字体颜色都变成红色了。这个cloneElement是react库里提供的一个方法，可以到源代码里查看了解如何使用
+
 如果不基于特定组件，那写一个封装的函数，把需要被封装的Component传进去，例如
 
 	 function highComponent(Com){
