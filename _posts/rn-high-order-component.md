@@ -77,3 +77,17 @@ tags: ReactNative
 这个demo很简单，不论往函数里传什么Component，都会被装在一个我们自定义的View里面。
 
 这两个写法效果是一样的，但后者比前者更强大一点，基于类可以实现更多功能。
+
+### 2017/12/16添加：
+需要注意在封装组件时，如果有内部使用的style，应该使用this.props.style和内部的进行组合，否则在使用这个封装组件时传入的style就不起作用了，对于上面例子里的HighComponent，下面设置的style不会起作用。
+
+	<HighComponent style={{marginLeft:50}} />
+要想让传入的style生效，在封装时就要使用this.props.style
+
+	class HighComponent extends MyComponent{
+		render(){
+			return(<View style={[this.props.style, {width:100,height:100,backgroundColor:"red"}]}>
+        		{super.render()}
+        	</View>)
+		}
+	}
