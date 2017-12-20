@@ -97,4 +97,4 @@ LayoutAnimation提供了一个接口Create方法，可以生成configureNext方�
 	LayoutAnimation.linear();
 	LayoutAnimation.spring();
 
-LayoutAnimation的底层实现是在native层，所以不会被js线程卡顿影响，比较适合做一些简单的动画，使用起来也很简单。
+LayoutAnimation的底层实现是在native层，所以不会被js线程卡顿影响，比较适合做一些简单的动画，使用起来也很简单,但不太适合用来做组合动画。configureNext的第二个参数可以传入一个回调，通过这个回调函数可以开始新的动画，但只在ios平台才有效，如果需要实现复杂的动画，应该使用Animated类。
