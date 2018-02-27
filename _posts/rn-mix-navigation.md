@@ -59,7 +59,7 @@ tags: ReactNative
 		scene1:{screen:TabContainer},
 		scene2:{screen:Scene2}
 	})
-直接运行的话就会发现,在Tab1和Tab2界面之间的跳转没问题，但没法跳转到scene2了，解决方案是将\<TabNav /\>替换成
+直接运行的话就会发现,在Tab1和Tab2界面之间的跳转没问题，但没法跳转到scene2了，解决方案是将\<TabNav />替换成
 
 	<TabNav navigation={this.props.navigation}/>
 然后添加一行

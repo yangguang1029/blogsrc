@@ -1,0 +1,12 @@
+---
+title: ReactNative之ios平台bundle拆分实现
+date: 2018-02-06 20:15:36
+tags: ReactNative
+---
+今天把放在github上的bundle拆分demo实现了ios版本，运行没问题后代码提交了上去，[demo地址](https://github.com/yangguang1029/ReactNativeSplit)。因为之前没接触过ReactNative的ios端源代码，所以实现的过程其实就是把ios端的运行流程大概看了一遍。
+
+如果不追究太多细节的话，整个流程就是AppDelegate.m里创建RCTRootView，在RCTRootView的init函数里，创建RCTBridge，然后在RCTCxxBridge的start方法里加载bundle并执行，加载完后回到RCTRootView的runApplication回调函数里，调用js方法AppRegistry.runApplication进入了js代码的入口。
+
+android和ios端的bundle拆分和分步加载方案原理是一样的，原来的实现是创建一个View，然后加载bundle，加载好了展示界面。我们把步骤稍微改一下，先加载common.bundle创建好js context并存起来，然后当需要展示界面时，创建view，并用已有的js context来加载业务bundle。为了能自由指定Bundle加载的时机，我们需要把加载bundle的接口抽离暴露出来。
+
+ios和android端流程上基本一样，只是类名字不同。android平台创建js context的类是ReactInstanceManager，而ios平台是RCTBridge，android平台的view是ReactRootView，而ios平台是RCTRootView等等。从代码量上看，android端稍微复杂一些。

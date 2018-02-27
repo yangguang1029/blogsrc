@@ -41,5 +41,5 @@ tags: ReactNative
 
 最后做了下验证，keyExtractor使用index时，将数据加在数组最后，而不是插在最前，那么没问题，不会全部刷新，因为前面CellRenderer的props都没有变化。但实际项目中不要贪图省事，之所以FlatList提供这个接口让开发者去实现，就肯定有这个需要，随便返回一个index可能就把自己给坑了。
 
-只要理解组件re-render的原理，还是很好查找到找到问题根源的。
+关于re-render的原理，官方有一篇文章叫[reconciliation](https://reactjs.org/docs/reconciliation.html)讲的很清楚，看完就更容易理解这个问题的本质了。
 	
