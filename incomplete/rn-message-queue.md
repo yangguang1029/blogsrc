@@ -27,7 +27,8 @@ MessageQueue有个接口，允许我们在log里查看通信记录，开启方�
     JS->N : Timing.createTimer([3,130,1518145070239,false])
     JS->N : Timing.createTimer([4,500,1518145070240,false])
     JS->N : UIManager.setJSResponder([4,false])
-这种通信都是异步的，消息到达时进行处理，但如果不能及时处理，就出现了延迟，感觉界面就出现了卡顿。我们通过一个例子说明一下
+
+JS线程和UI线程是不同的线程，所以这种通信都是异步的。因为RN的内部优化，UI线程很少出现卡死，我们在实际开发中容易碰到的问题是MessageQueue通信不顺畅，表现就是UI响应迟钝。有可能我们在js中写了个死循环，这导致MessageQueue彻底瘫痪，或者我们通过MessageQueue执行了太多交互，或者交互时传递大量数据，造成MessageQueue堵塞。我们通过一个例子来观察这种情况下的表现
 
     _delay(seconds) {
         let now = new Date().getTime();
@@ -48,13 +49,13 @@ MessageQueue有个接口，允许我们在log里查看通信记录，开启方�
             }}/>
         </View>
     }
-当点击按钮B时，可以看到很快就响应了，但如果点击A按钮后再点击B，就会发现没有任何反应，直到8秒后，B按钮才透明度变化并输出log，这是因为_delay函数里的无限循环把js线程卡死住，native层感受到了触摸，然后把事件发送到js层，但因为js层没有机会处理这个事件，所以没有任何反应，当无限循环结束后，事件才被处理，于是按钮点击效果出现，如果在点击按钮A后多次点击按钮B，可以看到这些事件都被堆积了下来。
+当点击按钮B时，可以正常的点击响应，但如果点击A按钮后再点击B，就会发现没有任何反应，直到8秒后，B按钮才透明度变化并输出log，这是因为_delay函数里的无限循环把js线程卡死住，native层感受到了触摸，然后把事件发送到js层，但因为js层没有机会处理它，而Button的透明度变化是在js代码里改变的，所以现象就是按钮没有任何反应，当8秒后无限循环结束，事件才被处理，于是按钮点击效果出现，如果在点击按钮A后多次点击按钮B，这些事件会被堆积下来，然后响应多次。
 
-还有一种情况，代码如下
+然后可以试验一下把MessageQueue堵塞的情况，例如
 
     _busy(){
         for(let i = 0; i < 10000; i++) {
             setTimeout(()=>{}, 10)
         }
     }
-点击按钮A后调用_busy函数，它连续创建10000个setTimeout，setTimeout的实现是通过MessageQueue从js端往native发送信息，最终调用Timing类的createTimer方法。这时再点击B按钮，也会发现一段时间内没有了响应。这是短时间内
+点击按钮A后调用_busy函数，它连续创建10000个setTimeout，setTimeout的实现是通过MessageQueue从js端往native发送信息，最终调用Timing类的createTimer方法。这样短时间内
