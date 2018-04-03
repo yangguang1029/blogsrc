@@ -2,7 +2,7 @@
 
 import os
 import re
-import shutil
+import shutil 
 
 root = os.path.dirname(os.path.abspath(__file__))
 postPath = os.path.join(root, "source", "_posts")
