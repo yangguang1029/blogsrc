@@ -1,5 +1,5 @@
 ---
-title: javaScript之class属性和方法
+title: javaScript之类的成员函数和箭头函数
 date: 2018-08-29 11:44:45
 tags: javascript
 ---
