@@ -1,0 +1,16 @@
+---
+title: ReactNative之一个监控组件刷新次数的实现方案
+date: 2019-01-16 21:15:36
+tags: ReactNative
+---
+在做RN开发中，检测是否有多余的重复渲染是做性能监控的重要手段，在React16.0之前，官方有一个工具叫做[perf](https://reactjs.org/docs/perf.html)，对应的在RN中，也可以使用Libraries/Performance/RCTRenderingPerf中提供的PerfMonitor类，它们提供了监控组件渲染次数的功能，借此发现是否有不必要的渲染。可惜这个工具在React16.0和ReactNative0.45以后就不再提供了，官方仓库有个[issue](https://github.com/facebook/react-native/issues/15371)提到了这个问题，然后就没有然后了……
+
+官方的Perf功能看起来比较强大，它的printWasted可以把渲染前后没有任何变化的组件打印出来，很直观的看到哪些组件发生了重复渲染，不过我们可以参照类似的API自己做一个简化版的，把组件的刷新次数变化打印出来，因为我们自己是明白哪些组件需要刷新哪些不需要刷新的，所以用这个数据可以自己找出是否有多余的渲染。代码我放到了[github仓库里](https://github.com/yangguang1029/MyReactNative/tree/master/perf)
+
+在addPerf.js里，给Component和PureComponent注入三个回调函数，在componentDidMount里，如果发现组件有tag成员属性，就把这个组件注册起来，记录其更新次数，在componentWillUnmount里取消注册，在componentWillUpdate里添加更新次数。如果想要监控某个组件的渲染次数，就必须在构造函数里添加tag成员属性，注意：**这个tag必须是每个组件实例唯一。**然后如果这个组件实现了这三个函数，需要使用super来调用基类的实现，例如super.componentDidMount()。ps:tag这个属性名太普遍，容易跟实际代码中的属性名重复，但我比较懒，不想再取个属性名，有需要的话，自己想个属性名吧
+
+在index.js里，renderCountDict以tag为key存储每个组件实例的渲染次数，perfDataDict则存储每次perf起始时的renderCountDict快照，调用startPerf传入一个key开始一次记录，调用stopPerf传入对应的key来完成一次记录，然后会自动打印出开始和结束时renderCountDict的变化。
+
+testPerf是一个用例，界面有一个flatlist和一个button，每次点击按钮，会给flatlist添加一个单元行，单元行组件Cell继承自Component并且拥有成员属性tag，所以会被记录刷新次数。我们在页面的componentWillUpdate里开始一次监控，在componentDidUpdate里结束这次监控，就可以看到页面刷新时，单元行组件的刷新状况。如果单元行组件Cell继承自Component，那么每次添加单元行时，原有的单元行也都跟着刷新了一次，但实际上它们的渲染内容没有任何变化，所以它们是重复渲染。而一旦我们让Cell继承自PureComponent，就会发现每次增加单元行时，只变化了新增的那个，这就比之前的方案要更优化。
+
+上面是一个很简单的例子，但用这个方法，可以很方便的监控两个时间点之间的组件刷新次数，比较重要的是选择好开始和停止的时间点，并且自己先明白有哪些组件需要刷新，那些不需要刷新但也发生刷新了的组件，就是我们需要优化的对象了。以上只是一个思路，实现上如果有更巧妙的方案，或者有大牛可以实现官方perf那样，能对比出组件渲染前后是否发生了变化，还请不吝赐教，谢谢~
