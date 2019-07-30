@@ -1,0 +1,29 @@
+---
+title: ReactNative之Redux源码阅读(combineReducers&bindActionCreators)
+date: 2019-07-28 21:15:36
+tags: ReactNative
+---
+
+闲话少叙，直接开始看另外两个文件
+
+### combineReducers
+
+照例，我们最好先把源码开头的注释仔细看一遍。combineReducers在实际中用的很多，它的作用是可以将多个reducer函数聚合起来，避免写一个太过庞大复杂的reducer函数。
+
+直接看源码，它接受的参数是一个object，其每个value都是一个reducer函数，而每个key就会用来作为state的key（这里对redux有了解的同学应该不难理解，每个reducer函数都会返回一个state，这些state就以这些key组合起来），在前一篇[ReactNative之Redux源码阅读(createStore)](http://yangguang1029.github.io/2019/07/24/rn-redux-source-code/)里也提到，使用combineReducers时如果有preloadState，两者结构需要保持一致。
+
+接下来开始看源码，前面的类型检验看完就可以跳过，首先需要注意一下assertReducerShape，它对每个reducer函数先做一次校验，传递一个ActionTypes.INIT以及一个随机字符串type进去，看是否返回合法值，这就要求reducer函数中state必须要有初始值，而且必须能响应任意action返回合法值，在实际操作中我们都是通过switch case的default来返回原始state，如果不这么做会抛出异常，就是这块代码实现的。
+
+接下来可以看到combineReducers返回的combination仍然是一个reducer函数（接收state和action，返回state），这样前一篇提到createStore的第一个参数可以是combineReducers函数的返回值，就很好理解了。
+
+接下来看combination的实现，首先是debug模式下使用getUnexpectedStateShapeWarningMessage进行一下校验，例如reducers不能是空object，state必须是plain object，以及state和reducers结构必须一致，校验不通过会发出黄屏警告。
+
+接下来它把接收的action交给每个reducer处理，然后把返回的state组合起来生成一个新的state.如果某个reducer函数不需要处理这个action，按照我们reducer函数的实现方案，它会返回原state。这里使用了一个临时变量hasChanged做标记，如果所有reducer函数响应该action后都没有发生变化，combination这个聚合reducer函数就返回原state，而不会返回一个新对象，但只要有一个reducer函数响应后state发生变化了，combination就会返回一个新的state对象，从而触发刷新。
+
+### bindActionCreators
+
+在这个文件初始有一个函数bindActionCreator，这个函数接受actionCreator函数和dispatch函数，返回一个新函数，它把actionCreator生成的action dispatch出去，我们调用这个新函数时，就是触发了dispatch，这个函数只是帮助开发者稍微简化一下代码。
+
+接下来看bindActionCreators的注释，它把一个object变成新的object，原object的每个value都是actionCreator函数，新object的key与原来一致，但value变成使用上面bindActionCreator封装之后的结果。函数的具体实现非常好看懂，其接受的第一个参数如果是object，就退化成bindActionCreator，否则就如上面所说，把每个value转换一次。
+
+这个辅助函数会用于react-redux中，我们通过this.props.actionCreator来dispatch一个action，就是使用它来简化了代码，以后分析到react-redux时再看
