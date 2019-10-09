@@ -20,6 +20,7 @@ def copyDir():
     for fileName in os.listdir(postPath):
         if os.path.isdir(os.path.join(postPath, fileName)):
             dirNames.append(fileName)
+            shutil.copytree(os.path.join(postPath, fileName), os.path.join(publicPath, fileName))
 
     os.path.walk(publicPath, walk, dirNames)
 
@@ -33,9 +34,8 @@ def main():
     print(s1)
     os.system(s1)
 
+    # 将博客内引用的图片拷贝到对应的public目录下
     copyDir()
-
-    shutil.copy(os.path.join(root, "jquery.qrcode.min.js"), publicPath)
 
     s1 = 'hexo d'
     print(s1)
